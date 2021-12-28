@@ -1,0 +1,53 @@
+services:
+  book:
+    build:
+      context: C:\Users\Thinksysuser\source\repos\Book
+      dockerfile: Book/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: Book
+      target: base
+    container_name: Book_1
+    entrypoint: tail -f /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      DOTNET_USE_POLLING_FILE_WATCHER: '1'
+      Database: books
+      DbPort: '1433'
+      DbServer: mssql
+      DbUser: sa
+      NUGET_FALLBACK_PACKAGES: ''
+      Password: Your_password123
+    image: book:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages  "/app/bin/Debug/netcoreapp3.1/Book.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof
+        dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    ports:
+    - target: 80
+    tty: true
+    volumes:
+    - C:\Users\Thinksysuser\source\repos\Book\Book:/app:rw
+    - C:\Users\Thinksysuser\vsdbg\vs2017u5:/remote_debugger:rw
+    - C:\Users\Thinksysuser\AppData\Roaming\ASP.NET\Https:/root/.aspnet/https:ro
+    - C:\Users\Thinksysuser\AppData\Roaming\Microsoft\UserSecrets:/root/.microsoft/usersecrets:ro
+    - C:\Users\Thinksysuser\.nuget\packages:/root/.nuget/packages:ro
+    - C:\Users\Thinksysuser\source\repos\Book:/src:rw
+  data:
+    container_name: mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: Your_password123
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+    - published: 1433
+      target: 1433
+    volumes:
+    - volume:/var/opt/mssql:rw
+version: '3.4'
+volumes:
+  volume: {}
